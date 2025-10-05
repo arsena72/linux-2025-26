@@ -50,6 +50,3 @@ private:
     std::size_t size;
     std::function<bool(int)> predicate;
 };
-
-// 9 - Spain
-//
