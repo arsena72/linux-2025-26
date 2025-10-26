@@ -1,22 +1,41 @@
 #pragma once
 #include <cstddef>
+#include <iterator>
 
 class reverse_array_iterator {
 public:
-    reverse_array_iterator(int* ptr) : current(ptr) {}
+    using iterator_category = std::forward_iterator_tag;
+    using difference_type = std::ptrdiff_t;
+    using value_type = int;
+    using pointer = value_type*;
+    using reference = value_type&;
 
-    int& operator*() const { return *current; }
-    reverse_array_iterator& operator++() {
+    explicit reverse_array_iterator(pointer ptr) noexcept : current(ptr) {}
+
+    [[nodiscard]] reference operator*() const noexcept { return *current; }
+    [[nodiscard]] pointer operator->() const noexcept { return current; }
+
+    reverse_array_iterator& operator++() noexcept {
         --current;
         return *this;
     }
 
-    bool operator!=(const reverse_array_iterator& other) const {
-        return current != other.current;
+    reverse_array_iterator operator++(int) noexcept {
+        reverse_array_iterator tmp = *this;
+        --current;
+        return tmp;
+    }
+
+    friend bool operator==(const reverse_array_iterator& a, const reverse_array_iterator& b) noexcept {
+        return a.current == b.current;
+    }
+
+    friend bool operator!=(const reverse_array_iterator& a, const reverse_array_iterator& b) noexcept {
+        return a.current != b.current;
     }
 
 private:
-    int* current;
+    pointer current;
 };
 
 class reverse_array_iterator_builder {

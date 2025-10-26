@@ -1,22 +1,42 @@
 #pragma once
 #include <cstddef>
+#include <iterator>
 
 class circular_int_iterator {
 public:
-    circular_int_iterator(int* data, std::size_t size)
+    using iterator_category = std::forward_iterator_tag;
+    using difference_type = std::ptrdiff_t;
+    using value_type = int;
+    using pointer = value_type*;
+    using reference = value_type&;
+
+    circular_int_iterator(pointer data, std::size_t size)
         : data(data), size(size), index(0) {}
 
-    int& operator*() const {
-        return data[index];
-    }
+    [[nodiscard]] reference operator*() const noexcept { return data[index]; }
+    [[nodiscard]] pointer operator->() const noexcept { return &data[index]; }
 
-    circular_int_iterator& operator++() {
+    circular_int_iterator& operator++() noexcept {
         index = (index + 1) % size;
         return *this;
     }
 
+    circular_int_iterator operator++(int) noexcept {
+        circular_int_iterator tmp = *this;
+        ++(*this);
+        return tmp;
+    }
+
+    friend bool operator==(const circular_int_iterator& a, const circular_int_iterator& b) noexcept {
+        return a.data == b.data && a.index == b.index && a.size == b.size;
+    }
+
+    friend bool operator!=(const circular_int_iterator& a, const circular_int_iterator& b) noexcept {
+        return !(a == b);
+    }
+
 private:
-    int* data;
+    pointer data;
     std::size_t size;
     std::size_t index;
 };
@@ -26,10 +46,11 @@ public:
     circular_int_iterator_builder(int* data, std::size_t size)
         : data(data), size(size), iterator(data, size) {}
 
-    int& get() { return *iterator; }
+    int& get() noexcept { return *iterator; }
 
-    circular_int_iterator& operator*() { return iterator; }
-    circular_int_iterator_builder& operator++() {
+    circular_int_iterator& operator*() noexcept { return iterator; }
+
+    circular_int_iterator_builder& operator++() noexcept {
         ++iterator;
         return *this;
     }
