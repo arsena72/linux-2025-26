@@ -5,3 +5,4 @@ project(linux_homeworks)
 
 add_subdirectory(hello_world)
 add_subdirectory(hw3_iterators)
+add_subdirectory(hw10_dir_watcher)
